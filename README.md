@@ -29,35 +29,43 @@ Add a jar dependency to your project
 How to deploy jar to the mvn-mirror-repo
 ----------------------------------------
 
-1. Update the mvn-mirror-repo project
+1. Update the `mvn-mirror-repo` project
     ```
     cd /path/to/mvn-mirror-repo/
     git pull
     ```
 
-2. Compile the jar
+2. Deploy the jar in this project
+
+    Replace `/path/to` with the path to the `mvn-mirror-repo` directory on your local computer.
+
+    Replace `[GROUPID]`, `[LIBRARY]` and `[VERSION]` with the names and version of the library you want to add to the repository.
 
     ```
-    mvn clean
-    mvn package
+    mvn deploy:deploy-file -Durl=file:///path/to/mvn-mirror-repo/ -DpomFile=pom.xml -Dfile=[LIBRARY]-[VERSION].jar -DgroupId=[GROUPID] -DartifactId=[LIBRARY] -Dpackaging=jar -Dversion=[VERSION]
     ```
 
-3. Deploy in this project
-
-    Replace "/path/to" with the path to the "mvn-mirror-repo" folder on your local computer.
-
-    Replace "[LIBRARY]" and "[VERSION]" with the name and version of the library you want to add to the repository.
+    Since most of this info is already available in the POM file, it can be simplified to:
 
     ```
-    mvn deploy:deploy-file -Durl=file:///path/to/mvn-mirror-repo/ -DpomFile=pom.xml -Dfile=[LIBRARY]-[VERSION].jar -DgroupId=au.gov.aims -DartifactId=[LIBRARY] -Dpackaging=jar -Dversion=[VERSION]
+    mvn deploy:deploy-file -Durl=file:///path/to/mvn-mirror-repo/ -DpomFile=/path/to/pom.xml -Dfile=/path/to/[LIBRARY]-[VERSION].jar
     ```
 
-    Examples (using the "mvn" command bundled in IntelliJ):
+    NOTE: Paths must be absolute.
+
+    You can install files copied from any source as long as you have the **JAR** and the **POM** file.
+    It's tempting to simply grab the files directly from your local maven repository `~/.m2/repository`
+    but the mvn command refuse to deploy jar from there.
+    Fortunately, you can easily trick it using a symbolic link:
     ```
-    mvn deploy:deploy-file -Durl=file:///home/glafond/Desktop/projects/Intellij/projects/mvn-mirror-repo/ -DpomFile=/home/glafond/Desktop/projects/Intellij/projects/sld/pom.xml -Dfile=/home/glafond/Desktop/projects/Intellij/projects/sld/target/sld-0.1.6.jar -DgroupId=au.gov.aims -DartifactId=sld -Dpackaging=jar -Dversion=0.1.6
-    mvn deploy:deploy-file -Durl=file:///home/glafond/Desktop/projects/Intellij/projects/mvn-mirror-repo/ -DpomFile=/home/glafond/Desktop/projects/Intellij/projects/layers2svg/pom.xml -Dfile=/home/glafond/Desktop/projects/Intellij/projects/layers2svg/target/layers2svg-0.1.11.jar -DgroupId=au.gov.aims -DartifactId=layers2svg -Dpackaging=jar -Dversion=0.1.11
-    mvn deploy:deploy-file -Durl=file:///home/glafond/Desktop/projects/Intellij/projects/mvn-mirror-repo/ -DpomFile=/home/glafond/Desktop/projects/Intellij/projects/edal-common_fix-mem-leak/pom.xml -Dfile=/home/glafond/Desktop/projects/Intellij/projects/edal-common_fix-mem-leak/target/edal-common_fix-mem-leak-1.2.4.jar -DgroupId=uk.ac.rdg.resc -DartifactId=edal-common_fix-mem-leak -Dpackaging=jar -Dversion=1.2.4
-    mvn deploy:deploy-file -Durl=file:///home/glafond/Desktop/projects/Intellij/projects/mvn-mirror-repo/ -DpomFile=/home/glafond/Desktop/projects/Intellij/projects/json/pom.xml -Dfile=/home/glafond/Desktop/projects/Intellij/projects/json/target/json-1.0.3.jar -DgroupId=au.gov.aims -DartifactId=json -Dpackaging=jar -Dversion=1.0.3
+    cd ~
+    ln -s .m2 m2
+    ```
+
+    Examples (using the symbolic link shown above):
+    ```
+    mvn deploy:deploy-file -Durl=file:///home/username/projects/mvn-mirror-repo/ -DpomFile=/home/username/m2/repository/edu/ucar/netcdf4/5.0.0-alpha3/netcdf4-5.0.0-alpha3.pom -Dfile=/home/username/m2/repository/edu/ucar/netcdf4/5.0.0-alpha3/netcdf4-5.0.0-alpha3.jar
+    mvn deploy:deploy-file -Durl=file:///home/username/projects/mvn-mirror-repo/ -DpomFile=/home/username/m2/repository/edu/ucar/netcdf4/4.6.10/netcdf4-4.6.10.pom -Dfile=/home/username/m2/repository/edu/ucar/netcdf4/4.6.10/netcdf4-4.6.10.jar
     ```
 
 4. Push to GitHub
@@ -68,6 +76,3 @@ How to deploy jar to the mvn-mirror-repo
     git commit -m "Commit message"
     git push -u origin master
     ```
-
-5. Change the version number in the pom of your project to use the latest version.
-
