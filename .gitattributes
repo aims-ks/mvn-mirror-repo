@@ -1,0 +1,6 @@
+# Commit every file as is, do not change line endings.
+# Without this, Git changes CR-LF (Windows style) into LF (Linux style)
+# on commit, which breaks file checksums.
+# https://git-scm.com/book/en/v2/Customizing-Git-Git-Attributes
+# https://docs.github.com/en/github/getting-started-with-github/configuring-git-to-handle-line-endings
+* binary
